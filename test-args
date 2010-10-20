@@ -1,0 +1,8 @@
+#!/bin/sh
+
+. utilities/bootstrap.sh
+
+for arg in $variables; do
+  echo "ARG: $arg=$(eval "echo \$$arg")"
+done
+

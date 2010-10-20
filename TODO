@@ -4,9 +4,10 @@ Add a value-fetching utility.
 
 Add a non-interactive option.  Instead of prompting for unknown args, we fail.
 Add a no-op option.  This just prints the run commands, it doesn't execute them.
-make run each script from the rootfs?
+run scripts from the rootfs as soon as possible, instead of passing rootfs?
 add a "are you sure, this machine is known broken!" command
 make networking more flexible
+make excellent documentation (using sphinx http://sphinx.pocoo.org ?)
 
 
 LXC:

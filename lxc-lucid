@@ -13,8 +13,9 @@ apt_cache="/192.168.122.1:3142"
 mirror="http:/$apt_cache/archive.ubuntu.com/ubuntu"
 
 
-start_image "$name"
+start_bootstrap "$name"
 run  export rootfs="$rootfs"
+
 run  cached-debootstrap     "$suite" "$arch" "$packages" "$mirror"
 run  update-locale
 run  disable-selinux
@@ -25,5 +26,6 @@ run  lucid-hacks
 run  update-openssh-keys
 run  create-configuration   "$path" "$name" "$arch"
 run  change-password
-stop_image
+
+stop_bootstrap
 

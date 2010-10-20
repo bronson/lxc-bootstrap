@@ -1,11 +1,11 @@
 # Creates the rootfs directory and sets up logging for the run command.
 # Pass name of the VM as a parameter, it sets the path and rootfs vars.
-# Make sure to call stop_image when you're done.
+# Make sure to call stop_bootstrap when you're done.
 
-start_image()
+start_bootstrap()
 {
   name="$1"
-  [ -z "$name" ] && die "You must pass a name to start_image!"
+  [ -z "$name" ] && die "You must pass a name to start_bootstrap!"
 
   [ "$(id -u)" != "0" ] && die "You must be root!"
 
@@ -27,9 +27,9 @@ start_image()
 }
 
 
-# Renames the machine image and turns off logging.
+# Finalizes the machine image and turns off logging.
 # Requires the path and name variables to be set
-stop_image()
+stop_bootstrap()
 {
   run mv "$path" "$name"
   rm "$name/log.fifo"

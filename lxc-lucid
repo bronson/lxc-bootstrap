@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. utilities/utilities.sh
+
+name=$1
+[ -z "$name" ] && die "You must specify a name!"
+
+arch=${2:-$(arch)}
+
+suite=lucid
+packages="dhcp3-client,gpgv,sudo,iputils-ping,apt-utils,ubuntu-keyring,openssh-server"
+apt_cache="/192.168.122.1:3142"
+mirror="http:/$apt_cache/archive.ubuntu.com/ubuntu"
+
+
+start_image "$name"
+run  export rootfs="$rootfs"
+run  cached-debootstrap     "$suite" "$arch" "$packages" "$mirror"
+run  update-locale
+run  disable-selinux
+run  setup-dhcp-networking  "$name"
+run  create-lxc-service
+run  fix-ssh-conf
+run  lucid-hacks
+run  update-openssh-keys
+run  create-configuration   "$path" "$name" "$arch"
+run  change-password
+stop_image
+

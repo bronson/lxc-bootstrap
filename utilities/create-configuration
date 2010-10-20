@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# configures the guest
+
+# TODO: reorganize this
+
+. utilities/utilities.sh
+
+path="$1"
+name="$2"
+arch="$3"
+require rootfs path name arch
+
+create "$path/config" <<EOF
+lxc.utsname = $name
+# lxc.arch = $arch
+
+lxc.network.type=veth
+lxc.network.link=virbr0
+lxc.network.flags=up
+
+lxc.tty = 4
+lxc.pts = 1024
+lxc.rootfs = $name/rootfs
+lxc.mount  = $name/fstab
+
+lxc.cgroup.devices.deny = a
+# /dev/null and zero
+lxc.cgroup.devices.allow = c 1:3 rwm
+lxc.cgroup.devices.allow = c 1:5 rwm
+# consoles
+lxc.cgroup.devices.allow = c 5:1 rwm
+lxc.cgroup.devices.allow = c 5:0 rwm
+lxc.cgroup.devices.allow = c 4:0 rwm
+lxc.cgroup.devices.allow = c 4:1 rwm
+# /dev/{,u}random
+lxc.cgroup.devices.allow = c 1:9 rwm
+lxc.cgroup.devices.allow = c 1:8 rwm
+lxc.cgroup.devices.allow = c 136:* rwm
+lxc.cgroup.devices.allow = c 5:2 rwm
+# rtc
+lxc.cgroup.devices.allow = c 254:0 rwm
+EOF
+
+
+create "$path/fstab" <<EOF
+proc            $name/rootfs/proc         proc    nodev,noexec,nosuid 0 0
+devpts          $name/rootfs/dev/pts      devpts defaults 0 0
+sysfs           $name/rootfs/sys          sysfs defaults  0 0
+# tmpfs /dev/shm tmpfs defaults 0 0
+EOF
+
+create "$rootfs/lib/init/fstab" <<EOF
+# /lib/init/fstab: lxc system fstab
+none            /spu                      spufs           gid=spu,optional                  0 0
+none            /tmp                      none            defaults                          0 0
+none            /var/lock                 tmpfs           nodev,noexec,nosuid,showthrough   0 0
+none            /lib/init/rw              tmpfs           mode=0755,nosuid,optional         0 0
+EOF
+

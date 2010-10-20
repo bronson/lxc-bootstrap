@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Because we're generating the VMs by copying a machine image,
+# all guests would end up having the same ssh private keys!
+# This forces the keys to be regenerated.
+
+. utilities/utilities.sh
+
+require rootfs
+
+run chroot "$rootfs" sh -c 'rm /etc/ssh/ssh_host_*'
+export DEBIAN_FRONTEND=noninteractive
+run chroot "$rootfs" dpkg-reconfigure openssh-server
+

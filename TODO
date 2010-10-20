@@ -1,0 +1,12 @@
+Add a value-fetching utility.
+  input name     # reads name from args, prompts if not supplied
+  input arch $(arch)   # reads arch from args, uses default if not supplied
+
+Add a non-interactive option.  Instead of prompting for unknown args, we fail.
+Add a no-op option.  This just prints the run commands, it doesn't execute them.
+start_image -> start_bootstrap, etc
+add a "are you sure, this machine is known broken!" command
+
+LXC:
+  lxc-wait should accept a timeout argument
+  it should be possible to run multiple lxc-waits and lxc-monitors at once

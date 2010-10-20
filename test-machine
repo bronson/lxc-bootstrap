@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Fires up a guest, verifies that it's working, then shuts it down.
+# script return code: 0=tests pass, 1=tests failed, 10+=error running test
+# Guests should be configured to use DHCP.  You can test multiple guests
+# simultaneously, just make sure they all have different names.
+
+# TODO: how should I prevent SSH from prompting for the password?
+# TODO: ensure the guest's SSH private key is different from the template's
+
+
+name=$1
+if [ -z "$name" ]; then
+  echo "You must supply a name!"
+  exit 10
+fi
+
+if ! lxc-info -n "$name" | grep -q 'STOPPED$'; then
+  echo "Error: $(lxc-info -n "$name"), not STOPPED!"
+  exit 13
+fi
+
+
+# There's a slight chance of a race condition here...  if the guest can
+# boot and lease its IP before the tail -f starts below, we'll miss the
+# IP address.  Startup appears to take 10-20 seconds though so no big deal.
+# Not true!  Sometimes it takes a second or two!
+echo "Starting $name..."
+lxc-start --daemon --name="$name" --rcfile="$name/config" --logfile=/tmp/log
+
+
+
+# Scan the syslog for the IP address of the new machine.
+# since tail -f doesn't accept a timeout, fake it with a sleeping process.
+sleep 30 &
+timeoutpid="$!"
+
+# Look for "DHCPACK(virbr0) 192.168.122.4 7a:82:fb:80:22:fa newubu"
+# sent by libvirt's dnsmasq-dhcp service.  This script is nuts,
+# wish I knew why sed can't just print a backreference.
+read ip < <(tail -f -n 0 --pid="$timeoutpid" /var/log/syslog | tee /tmp/test-machine-log | \
+  sed -n -e "s/^.*DHCPACK(virbr0)\s*\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*$name/\1/" \
+    -e '/^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$/{p;q}')
+if [ -z "$ip" ]; then
+  echo "Could not determine guest's IP from /var/log/syslog!"
+  exit 11
+fi
+
+echo "Guest's IP is $ip"
+
+
+# apparently lxc-wait is level-triggered, not edge-triggered.
+# waiting on STOPPED just returns immediately.  That's too bad
+# because there's a good chance we'll miss the STOPPING event.
+# lxc-wait -n "$name" -s "RUNNING|STOPPING"
+
+
+if ! lxc-info -n "$name" | grep -q "RUNNING$"; then
+  echo "Machine could not be started.  See /tmp/log."
+  exit 12
+fi
+
+
+# run tests here
+
+
+echo "Shutting down $name via ssh"
+ssh $ip "shutdown -h now"
+# TODO: lxc-wait really needs a timeout.
+lxc-wait -n "$name" -s "STOPPED"
+
+echo "All tests passed!"

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Without this patch, sshd still starts but it prints:
+#     ssh main process (43) terminated with status 255
+# on the console.  Also, it doesn't terminate when doing
+# a 'shutdown -h' from within the guest.
+#
+# This fix is in Maverick's ssh.conf.  It's only necessary for Lucid.
+
+
+. utilities/utilities.sh
+
+require rootfs
+
+
+# Test for ssh.conf first -- the guest might not have the
+# ssh-server package installed.
+
+[ -f "$rootfs"/etc/init/ssh.conf ] && patch_file "$rootfs" <<EOF
+--- /etc/init/ssh.conf.dpkg-orig	2010-03-08 15:35:50.000000000 +0000
++++ /etc/init/ssh.conf	2010-10-04 21:51:51.611648001 +0000
+@@ -5,7 +5,7 @@
+ description	"OpenSSH server"
+ 
+ start on filesystem
+-stop on runlevel S
++stop on runlevel [!2345]
+ 
+ expect fork
+ respawn
+EOF
+

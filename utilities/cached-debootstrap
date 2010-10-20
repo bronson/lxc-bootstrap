@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# If necessary, downloads the default debootstrap image and caches it.
+# Then it copies the cached image to become the new rootfs.
+
+# suite:   etch, lenny, squeeze, sid / stable, testing, unstable
+#            warty hoary breezy dapper edgy feisty gutsy hardy intrepid jaunty karmic lucid maverick
+# arch:    any architecture supported by debootstrap, probably i386 or amd64
+# include: (optional) a comma-separated list of packages to include in the debootstrap image
+# mirror:  (optional) the mirror that debootstrap should use
+
+. utilities/utilities.sh
+
+cache="/var/cache/lxc/images"
+
+suite="$1"
+arch="$2"
+include="$3"
+mirror="$4"
+
+require rootfs suite arch
+
+[ "$arch" = "x86_64" ] && arch=amd64
+[ "$arch" = "i686" ] && arch=i386
+
+config="$suite-$arch"
+if [ -n "$include" ]; then
+    # sort and compact the package list
+    include="$(echo "$include" | tr -d '[:space:]' | tr , '\n' | sort | paste -s -d ',')"
+    config="$config+$include"
+fi
+
+if [ ! -d "$cache/$config" ]; then
+    [ -d "$cache/partial-$config" ] && run rm -rf "$cache/partial-$config"
+
+    run debootstrap --verbose --variant=minbase "--arch=$arch" \
+        --include="$include" "$suite" "$cache/partial-$config" "$mirror"
+
+    run mv "$cache/partial-$config" "$cache/$config"
+fi
+
+run cp -a "$cache/$config" "$rootfs"
+

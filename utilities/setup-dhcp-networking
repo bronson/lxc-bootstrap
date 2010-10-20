@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# sets up networking for dhcp
+
+. utilities/utilities.sh
+
+hostname="$1"
+require rootfs hostname
+
+
+create "$rootfs/etc/network/interfaces" <<EOF
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+EOF
+
+create "$rootfs/etc/hostname" <<EOF
+$hostname
+EOF
+
+create "$rootfs/etc/hosts" <<EOF
+127.0.0.1 localhost $hostname
+EOF
+

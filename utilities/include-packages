@@ -1,0 +1,11 @@
+#!/bin/sh
+
+. utilities/utilities.sh
+
+require rootfs
+
+run chroot "$rootfs" apt-get update
+# Way to make this painful debconf.  Why is it so hard to make you go away?  :(
+export DEBIAN_FRONTEND=noninteractive
+run chroot "$rootfs" apt-get -y install "$@"
+

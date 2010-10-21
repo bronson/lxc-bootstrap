@@ -2,10 +2,12 @@
 
 . utilities/bootstrap.sh
 
-name=$1
-[ -z "$name" ] && die "You must specify a name!"
+ask "The name for this guest?" name "$(parameter 1 "$@")"
+ask "The arch to use?" arch $(guess_arch)
 
-arch=${2:-$(arch)}
+echo "name=$name"
+echo "arch=$arch"
+exit
 
 suite=lucid
 packages="dhcp3-client,gpgv,sudo,iputils-ping,apt-utils,ubuntu-keyring,openssh-server"

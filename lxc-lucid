@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . utilities/utilities.sh
-. utilities/bootstrap.sh
+init_bootstrap "$@"
 
 ask "The name for this guest?" name "$(parameter 1 "$@")"
 ask "The arch to use?" arch $(guess_arch)

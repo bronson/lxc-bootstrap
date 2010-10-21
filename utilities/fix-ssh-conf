@@ -8,15 +8,12 @@
 # This fix is in Maverick's ssh.conf.  It's only necessary for Lucid.
 
 
-. utilities/utilities.sh
-
-require rootfs
-
+. utilities.sh
 
 # Test for ssh.conf first -- the guest might not have the
 # ssh-server package installed.
 
-[ -f "$rootfs"/etc/init/ssh.conf ] && patch_file "$rootfs" <<EOF
+[ -f ./etc/init/ssh.conf ] && patch_file <<EOF
 --- /etc/init/ssh.conf.dpkg-orig	2010-03-08 15:35:50.000000000 +0000
 +++ /etc/init/ssh.conf	2010-10-04 21:51:51.611648001 +0000
 @@ -5,7 +5,7 @@

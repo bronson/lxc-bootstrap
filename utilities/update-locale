@@ -2,15 +2,13 @@
 
 # Compiles and creates the proper locale based on the $LANG environment var.
 
-. utilities/utilities.sh
-
-require rootfs
+. utilities.sh
 
 if [ -z "$LANG" ]; then
-  run chroot "$rootfs" locale-gen en_US.UTF-8
-  run chroot "$rootfs" update-locale LANG=en_US.UTF-8
+  run chroot . locale-gen en_US.UTF-8
+  run chroot . update-locale LANG=en_US.UTF-8
 else
-  run chroot "$rootfs" locale-gen $LANG
-  run chroot "$rootfs" update-locale LANG=$LANG
+  run chroot . locale-gen "$LANG"
+  run chroot . update-locale LANG="$LANG"
 fi
 

@@ -4,12 +4,9 @@
 # fully boots.  todo: why is it needed?
 
 
-. utilities/utilities.sh
+. utilities.sh
 
-require rootfs
-
-
-create "$rootfs/etc/init/lxc.conf" <<EOF
+create "./etc/init/lxc.conf" <<EOF
 # fake some events needed for correct startup
 
 description     "Container Upstart"

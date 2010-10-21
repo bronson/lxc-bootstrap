@@ -4,14 +4,13 @@
 
 # TODO: reorganize this
 
-. utilities/utilities.sh
+. utilities.sh
 
-path="$1"
-name="$2"
-arch="$3"
-require rootfs path name arch
+name="$1"
+arch="$2"
+require name arch
 
-create "$path/config" <<EOF
+create "../config" <<EOF
 lxc.utsname = $name
 # lxc.arch = $arch
 
@@ -43,14 +42,14 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 EOF
 
 
-create "$path/fstab" <<EOF
+create "../fstab" <<EOF
 proc            $name/rootfs/proc         proc    nodev,noexec,nosuid 0 0
 devpts          $name/rootfs/dev/pts      devpts defaults 0 0
 sysfs           $name/rootfs/sys          sysfs defaults  0 0
 # tmpfs /dev/shm tmpfs defaults 0 0
 EOF
 
-create "$rootfs/lib/init/fstab" <<EOF
+create ./lib/init/fstab <<EOF
 # /lib/init/fstab: lxc system fstab
 none            /spu                      spufs           gid=spu,optional                  0 0
 none            /tmp                      none            defaults                          0 0

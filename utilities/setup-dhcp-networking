@@ -2,13 +2,13 @@
 
 # sets up networking for dhcp
 
-. utilities/utilities.sh
+. utilities.sh
 
 hostname="$1"
-require rootfs hostname
+require hostname
 
 
-create "$rootfs/etc/network/interfaces" <<EOF
+create "./etc/network/interfaces" <<EOF
 auto lo
 iface lo inet loopback
 
@@ -16,11 +16,11 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
-create "$rootfs/etc/hostname" <<EOF
+create "./etc/hostname" <<EOF
 $hostname
 EOF
 
-create "$rootfs/etc/hosts" <<EOF
+create "./etc/hosts" <<EOF
 127.0.0.1 localhost $hostname
 EOF
 

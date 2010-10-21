@@ -1,11 +1,9 @@
 #!/bin/sh
 
-. utilities/utilities.sh
-
-require rootfs
+. utilities.sh
 
 
-create "$rootfs/etc/init/console.conf" <<EOF
+create ./etc/init/console.conf <<EOF
 # console - getty
 #
 # This service maintains a console on tty1 from the point the system is
@@ -19,11 +17,11 @@ exec /sbin/getty -8 38400 /dev/console
 EOF
 
 
-chroot "$rootfs" /usr/sbin/update-rc.d -f ondemand remove
+chroot . /usr/sbin/update-rc.d -f ondemand remove
 
-chroot "$rootfs" /bin/bash -c 'cd /etc/init; for f in $(ls u*.conf); do mv $f $f.orig; done'
-chroot "$rootfs" /bin/bash -c 'cd /etc/init; for f in $(ls tty[2-9].conf); do mv $f $f.orig; done'
-chroot "$rootfs" /bin/bash -c 'cd /etc/init; for f in $(ls plymouth*.conf); do mv $f $f.orig; done'
-chroot "$rootfs" /bin/bash -c 'cd /etc/init; for f in $(ls hwclock*.conf); do mv $f $f.orig; done'
-chroot "$rootfs" /bin/bash -c 'cd /etc/init; for f in $(ls module*.conf); do mv $f $f.orig; done'
+chroot . /bin/bash -c 'cd /etc/init; for f in $(ls u*.conf); do mv $f $f.orig; done'
+chroot . /bin/bash -c 'cd /etc/init; for f in $(ls tty[2-9].conf); do mv $f $f.orig; done'
+chroot . /bin/bash -c 'cd /etc/init; for f in $(ls plymouth*.conf); do mv $f $f.orig; done'
+chroot . /bin/bash -c 'cd /etc/init; for f in $(ls hwclock*.conf); do mv $f $f.orig; done'
+chroot . /bin/bash -c 'cd /etc/init; for f in $(ls module*.conf); do mv $f $f.orig; done'
 

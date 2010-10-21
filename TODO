@@ -1,4 +1,5 @@
-run scripts from the rootfs as soon as possible, instead of passing rootfs?
+Make sure we exit whenever a utility exits abnormally: set -e
+
 add a "are you sure, this machine is known broken!" command
 make networking more flexible
 make excellent documentation (using sphinx http://sphinx.pocoo.org ?)

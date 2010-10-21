@@ -2,10 +2,8 @@
 
 # Creates an /selinux/enforce file that disables selinux.
 
-. utilities/utilities.sh
+. utilities.sh
 
-require rootfs
-
-run mkdir -p "$rootfs/selinux"
-echo 0 | create "$rootfs/selinux/enforce"
+run mkdir -p "./selinux"
+echo 0 | create "./selinux/enforce"
 

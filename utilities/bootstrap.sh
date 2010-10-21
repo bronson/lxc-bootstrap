@@ -1,9 +1,5 @@
-# Includes utilities.sh and then converts the command line args into variables.
-#   --network=dhcp turns into $network with a value of "dhcp"
 # This file is meant to be sourced by top-level bootstrap commands, i.e. lxc-lucid.
-# Also includes functions only useful to top-level commands.
-
-. utilities/utilities.sh
+# Includes functions only useful to top-level commands.
 
 
 # Creates the rootfs directory and sets up logging for the run command.
@@ -15,10 +11,10 @@ start_bootstrap()
 
   [ "$(id -u)" != "0" ] && die "You must be root!"
 
-  export PATH="$PWD/utilities:$PATH"
-
   [ -e "$name" ] && die "$name already exists!"
   [ -e "$name-partial" ] && run rm -rf "$name-partial"
+
+  # set -e   # exit immediately if any of our commands die
 
   path="$name"-partial
 
@@ -48,6 +44,8 @@ stop_bootstrap()
 }
 
 
+# Converts the command line args into variables.
+# i.e. --network=dhcp turns into $network with a value of "dhcp"
 read_command_line()
 {
   local arg name value

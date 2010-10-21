@@ -4,11 +4,9 @@
 # all guests would end up having the same ssh private keys!
 # This forces the keys to be regenerated.
 
-. utilities/utilities.sh
+. utilities.sh
 
-require rootfs
-
-run chroot "$rootfs" sh -c 'rm /etc/ssh/ssh_host_*'
+run chroot . sh -c 'rm /etc/ssh/ssh_host_*'
 export DEBIAN_FRONTEND=noninteractive
-run chroot "$rootfs" dpkg-reconfigure openssh-server
+run chroot . dpkg-reconfigure openssh-server
 

@@ -80,7 +80,7 @@ patch_file() {
   if [ -z "$dry_run" ]; then
     cat > "$patch"
     cat "$patch" | sed 's/^/    /'
-    run patch --directory="$1" -p1 < "$patch"
+    run patch -p1 < "$patch"
     ret="$?"
     rm "$patch"
     if [ "$ret" -ne "0" ]; then

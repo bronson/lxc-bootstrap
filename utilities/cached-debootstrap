@@ -9,14 +9,15 @@
 # include: (optional) a comma-separated list of packages to include in the debootstrap image
 # mirror:  (optional) the mirror that debootstrap should use
 
-. utilities/utilities.sh
+. utilities.sh
 
 cache="/var/cache/lxc/images"
 
-suite="$1"
-arch="$2"
-include="$3"
-mirror="$4"
+rootfs="$1"
+suite="$2"
+arch="$3"
+include="$4"
+mirror="$5"
 
 require rootfs suite arch
 

@@ -5,10 +5,7 @@ die() {
 
 
 ask() {
-  prompt="$1"
-  varname="$2"
-  default="$3"
-
+  local prompt="$1" varname="$2" default="$3"
   if [ -n "$non_interactive" ]; then
     [ -z "$(eval echo "\$$varname")" ] && eval "$varname=$default"
     [ -z "$(eval echo "\$$varname")" ] && die "Need to supply $varname!"
@@ -24,6 +21,7 @@ ask() {
 
 
 require() {
+  local i
   for i in "$@"; do
     eval "val=\$$i"
     if [ -z "$val" ]; then
@@ -37,7 +35,7 @@ require() {
 # digs through its parameters looking for the nth one that isn't
 # an argument (i.e. not '-r' or '--recursive')
 parameter() {
-  skip="$1"
+  local val skip="$1"
   shift
 
   for val in "$@"; do
@@ -77,7 +75,7 @@ create() {
 # The patch should use absolute paths.
 
 patch_file() {
-  patch="$(tempfile -p patch)" || die "could not create tempfile"
+  local ret patch="$(tempfile -p patch)" || die "could not create tempfile"
   cat > "$patch"
   echo "- Using this patchfile:"
   cat "$patch" | sed 's/^/    /'
@@ -96,6 +94,7 @@ patch_file() {
 # example: run echo hi -> "  hi"
 
 run() {
+  local dir fifo ret
   echo "- \$ $@"
   dir="$(mktemp -d)"
   fifo="$dir/fifo"

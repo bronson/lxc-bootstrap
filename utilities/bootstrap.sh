@@ -11,8 +11,7 @@
 # Make sure to call stop_bootstrap when you're done.
 start_bootstrap()
 {
-  name="$1"
-  [ -z "$name" ] && die "You must pass a name to start_bootstrap!"
+  [ -z "$name" ] && die "You must supply a name to start_bootstrap!"
 
   [ "$(id -u)" != "0" ] && die "You must be root!"
 

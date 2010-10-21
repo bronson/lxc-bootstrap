@@ -11,7 +11,7 @@ apt_cache="/192.168.122.1:3142"
 mirror="http:/$apt_cache/archive.ubuntu.com/ubuntu"
 
 
-start_bootstrap "$name"
+start_bootstrap
 run  export rootfs="$rootfs"
 
 run  cached-debootstrap     "$suite" "$arch" "$packages" "$mirror"

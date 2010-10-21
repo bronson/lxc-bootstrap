@@ -1,6 +1,3 @@
-Add a non-interactive option.  Instead of prompting for unknown args, we fail.
-  -n --non-interactive
-
 Make apt-cache detect if the cache should be used or not
   --apt-cache=192.168.122.1:3142
 

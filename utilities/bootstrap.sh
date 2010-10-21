@@ -47,13 +47,20 @@ stop_bootstrap()
 }
 
 
-# copy values from cmdline to environment vars
-for arg in "$@"; do
-  arg="${arg##--}"    # leading dashes are irrelevant
-  name="${arg%%=*}"
-  name="$(echo "$name" | tr - _)"
-  value="${arg#*=}"
-  export "$name=$value"
-  variables="$variables$name "
-done
-# echo "variables: $variables"
+read_command_line()
+{
+  local arg name value
+  # copy values from cmdline to environment vars
+  for arg in "$@"; do
+    [ "$arg" = '-n' ] && arg="--non-interactive"
+
+    arg="${arg##--}"    # leading dashes are irrelevant
+    name="${arg%%=*}"
+    name="$(echo "$name" | tr - _)"
+    value="${arg#*=}"
+    export "$name=$value"
+    variables="$variables$name "
+  done
+}
+
+read_command_line "$@"

@@ -9,12 +9,17 @@ ask() {
   varname="$2"
   default="$3"
 
-  [ -n "$default" ] && guess=" [$default]"
-  while [ -z "$(eval echo "\$$varname")" ]; do
-    echo -n "$prompt$guess "
-    read "$varname"
+  if [ -n "$non_interactive" ]; then
     [ -z "$(eval echo "\$$varname")" ] && eval "$varname=$default"
-  done
+    [ -z "$(eval echo "\$$varname")" ] && die "Need to supply $varname!"
+  else
+    [ -n "$default" ] && guess=" [$default]"
+    while [ -z "$(eval echo "\$$varname")" ]; do
+      echo -n "$prompt$guess "
+      read "$varname"
+      [ -z "$(eval echo "\$$varname")" ] && eval "$varname=$default"
+    done
+  fi
 }
 
 

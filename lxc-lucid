@@ -5,10 +5,6 @@
 ask "The name for this guest?" name "$(parameter 1 "$@")"
 ask "The arch to use?" arch $(guess_arch)
 
-echo "name=$name"
-echo "arch=$arch"
-exit
-
 suite=lucid
 packages="dhcp3-client,gpgv,sudo,iputils-ping,apt-utils,ubuntu-keyring,openssh-server"
 apt_cache="/192.168.122.1:3142"

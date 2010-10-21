@@ -65,4 +65,12 @@ read_command_line()
   done
 }
 
+
+# read configuration files
+[ -f /etc/lxc-bootstrap.conf ] && . /etc/lxc-bootstrap.conf
+[ -f ~/.lxc-bootstrap.conf ] && . ~/.lxc-bootstrap.conf
+[ -f lxc-bootstrap.conf ] && . ./lxc-bootstrap.conf
+
+[ -n "$apt_cache" ] && apt_cache="/$apt_cache"
+
 read_command_line "$@"

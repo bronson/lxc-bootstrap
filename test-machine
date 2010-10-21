@@ -9,7 +9,7 @@
 # TODO: ensure the guest's SSH private key is different from the template's
 
 
-name=$1
+name=${1%/}
 if [ -z "$name" ]; then
   echo "You must supply a name!"
   exit 10

@@ -1,9 +1,6 @@
 Make apt-cache detect if the cache should be used or not
   --apt-cache=192.168.122.1:3142
 
-Add a no-op option.  This just prints the run commands, it doesn't execute them.
-  --dry-run
-
 run scripts from the rootfs as soon as possible, instead of passing rootfs?
 add a "are you sure, this machine is known broken!" command
 make networking more flexible

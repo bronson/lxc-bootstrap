@@ -8,7 +8,7 @@ ask() {
   local prompt="$1" varname="$2" default="$3"
   if [ -n "$non_interactive" ]; then
     [ -z "$(eval echo "\$$varname")" ] && eval "$varname=$default"
-    [ -z "$(eval echo "\$$varname")" ] && die "Need to supply $varname!"
+    [ -z "$(eval echo "\$$varname")" ] && die "Need to supply the $varname!"
   else
     [ -n "$default" ] && guess=" [$default]"
     while [ -z "$(eval echo "\$$varname")" ]; do
@@ -32,14 +32,14 @@ require() {
 }
 
 
-# digs through its parameters looking for the nth one that isn't
-# an argument (i.e. not '-r' or '--recursive')
+# scans through its parameters looking for the nth one that isn't
+# an argument (i.e. doesn't begin with a dash like '-n' or '--recursive')
 parameter() {
   local val skip="$1"
   shift
 
   for val in "$@"; do
-    # if this arg doesn't being with a dash
+    # if this arg doesn't begin with a dash
     if [ "${val#-}" = "$val" ]; then
       # and we've skipped the right number of non-dashes
       if [ "$((skip -= 1))" -le 0 ]; then
@@ -66,7 +66,7 @@ guess_arch() {
 # Creates a file with the contents given on stdin
 create() {
   echo "- creating $1:"
-  cat > "$1"
+  [ -z "$dry_run" ] && cat > "$1"
   cat "$1" | sed -e "s/^/  $INDENT/"
 }
 
@@ -76,15 +76,19 @@ create() {
 
 patch_file() {
   local ret patch="$(tempfile -p patch)" || die "could not create tempfile"
-  cat > "$patch"
   echo "- Using this patchfile:"
-  cat "$patch" | sed 's/^/    /'
-  run patch --directory="$1" -p1 < "$patch"
-  ret="$?"
-  rm "$patch"
-  if [ "$ret" -ne "0" ]; then
-    echo "Exiting because patch failed: $ret"
-    exit "$ret"
+  if [ -z "$dry_run" ]; then
+    cat > "$patch"
+    cat "$patch" | sed 's/^/    /'
+    run patch --directory="$1" -p1 < "$patch"
+    ret="$?"
+    rm "$patch"
+    if [ "$ret" -ne "0" ]; then
+      echo "Exiting because patch failed: $ret"
+      exit "$ret"
+    fi
+  else
+    cat
   fi
 }
 
@@ -95,17 +99,22 @@ patch_file() {
 
 run() {
   local dir fifo ret
+
   echo "- \$ $@"
-  dir="$(mktemp -d)"
-  fifo="$dir/fifo"
-  mkfifo -m 600 "$fifo"
-  sed --unbuffered -e "s/^/  $INDENT/" < "$fifo" &
-  INDENT="  $INDENT" "$@" > "$fifo"
-  ret="$?"
-  rm -rf "$dir"
-  if [ "$ret" -ne "0" ]; then
-    echo "Exiting due to nonzero error code: $ret"
-    exit "$ret"
+  if [ -z "$dry_run" ]; then
+    dir="$(mktemp -d)"
+    fifo="$dir/fifo"
+    mkfifo -m 600 "$fifo"
+    sed --unbuffered -e "s/^/  $INDENT/" < "$fifo" &
+
+    INDENT="  $INDENT" "$@" > "$fifo"
+    ret="$?"
+
+    rm -rf "$dir"
+    if [ -n "$ret" ] && [ "$ret" -ne "0" ]; then
+      echo "Exiting due to nonzero error code: $ret"
+      exit "$ret"
+    fi
   fi
 }
 

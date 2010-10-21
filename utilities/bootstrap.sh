@@ -26,10 +26,12 @@ start_bootstrap()
   rootfs="$path/rootfs"
 
   # Log output to a file and to the console
-  echo "Creating $name on $(date)" > "$path/create.log"
-  mkfifo -m 600 "$path/log.fifo"
-  tee -a "$path/create.log" < "$path/log.fifo" &
-  exec 1> "$path/log.fifo"
+  if [ -z "$dry_run" ]; then
+    echo "Creating $name on $(date)" > "$path/create.log"
+    mkfifo -m 600 "$path/log.fifo"
+    tee -a "$path/create.log" < "$path/log.fifo" &
+    exec 1> "$path/log.fifo"
+  fi
 }
 
 
@@ -38,7 +40,7 @@ start_bootstrap()
 stop_bootstrap()
 {
   run mv "$path" "$name"
-  rm "$name/log.fifo"
+  [ -z "$dry_run" ] && rm "$name/log.fifo"
 
   echo "done.  new machine is in $name"
   exec 1>&-   # doesn't seem to sort buffering issues, not sure why
@@ -51,7 +53,8 @@ read_command_line()
   local arg name value
   # copy values from cmdline to environment vars
   for arg in "$@"; do
-    [ "$arg" = '-n' ] && arg="--non-interactive"
+    [ "$arg" = '-z' ] && arg="--non-interactive"
+    [ "$arg" = '-n' ] && arg="--dry-run"
 
     arg="${arg##--}"    # leading dashes are irrelevant
     name="${arg%%=*}"

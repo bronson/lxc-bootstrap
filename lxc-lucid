@@ -7,7 +7,6 @@ ask "The arch to use?" arch $(guess_arch)
 
 suite=lucid
 packages="dhcp3-client,gpgv,sudo,iputils-ping,apt-utils,ubuntu-keyring,openssh-server"
-apt_cache="/192.168.122.1:3142"
 mirror="http:/$apt_cache/archive.ubuntu.com/ubuntu"
 
 

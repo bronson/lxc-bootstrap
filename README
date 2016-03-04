@@ -1,0 +1,66 @@
+from an email...
+
+
+I've been playing around with some ideas on
+
+https://github.com/bronson/lxc-bootstrap
+
+It's not presentable yet but it seems promising...
+
+
+I originally wrote everything as Perl modules (you might recall our
+emails earlier) but abandoned that pretty quickly...  It produced a
+lot of code but not a lot of insight.  I couldn't imagine other people
+contributing to a big, API-heavy gob like that very willingly.
+
+
+I needed to make it more modular and easier to use.  And, most
+importantly, I wanted to be able to run each step by hand.  So, I
+switched to writing small, independent, language-neutral Unix
+utilities (in the utilities directory) to perform each step, then
+driving them with a master script.  Right now everything is written in
+shell but, if a utitlity gets complex it can be written in Perl, or if
+it needs to call into the kernel, it can be written in C.  Pretty
+flexible.
+
+Here's how to create a working Lucid machine:
+
+   ./lxc-lucid newname
+
+You can configure it via the command line (--arch=i386), and it will
+prompt for anything you don't supply.  Then it prints everything it
+does while creating the machine.  If you run the commands it prints in
+another terminal, you'll create an identical machine by hand.  This
+makes it easy to follow what the utilities are doing and to poke
+around to see where anything is going wrong.
+
+
+Unfortunately, I haven't had a chance to make it very configurable.
+It needs to support different networking setups, not just DHCP.  I
+also need to write more driver scripts.  It shouldn't be too hard to
+support different Ubuntu releases, and Debian and Red Hat and
+busybox/ssh scripts...  just a lot of time!
+
+
+As for testing, if you install libvirt (so dnsmaq and the vibr0
+interface are set up), running the test-machine script should boot a
+machine, verify it's running, and shut it down.
+
+   ./test-machine anyname
+
+My next step was to write a script to generate machines in every
+supported configuration and boot them with the test-machine script to
+make sure they worked.  I was going to drive all that with a
+continuous integration setup (Hudson?) so that each checkin would be
+tested and breakage in any supported configuration would be noticed
+quickly.
+
+Such high aspirations.  :)
+
+
+I landed a good contract job in late October so my time since then has
+been seriously limited.  I'm still wanting to get back to this and
+finish the experiment but I need to pay the bills first!
+
+Hope this can be useful.  I'll try to contribute however I can.
+
